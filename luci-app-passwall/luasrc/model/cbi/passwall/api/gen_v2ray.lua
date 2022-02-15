@@ -529,6 +529,9 @@ if dns_server or dns_fakedns then
         servers = {
             dns_server
         },
+        proxySettings = {
+            outboundTag = "XrayDNS"
+        },
         clientIp = (dns_client_ip and dns_client_ip ~= "") and dns_client_ip or nil,
         queryStrategy = (dns_query_strategy and dns_query_strategy ~= "") and dns_query_strategy or nil
     }
@@ -618,7 +621,7 @@ if dns_server or dns_fakedns then
         local outboundTag = node_section
         local node = uci:get_all(appname, node_section)
         if node.protocol == "_shunt" then
-            outboundTag = "default"
+            outboundTag = "XrayDNS"
         end
         table.insert(rules, {
             type = "field",
