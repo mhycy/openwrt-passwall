@@ -1131,6 +1131,10 @@ start_dns() {
 		source $APP_PATH/helper_smartdns.sh restart
 		echolog "  - 域名解析：使用SmartDNS，请确保配置正常。"
 	;;
+
+	xray)
+		echolog "  - 域名解析：使用Xray，请确保配置正常。"
+	;;
 	esac
 
 	[ -n "$chnlist" ] && [ "$CHINADNS_NG" = "1" ] && [ -n "$(first_type chinadns-ng)" ] && [ -s "${RULES_PATH}/chnlist" ] && {
