@@ -443,7 +443,7 @@ if node_section then
                 if e.domain_list then
                     local _domain = {}
                     string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
-                        if string.sub(w, 0, 1) != "#" then 
+                        if string.sub(w, 0, 1) ~= "#" then 
                             table.insert(_domain, w)
                         end
                     end)
@@ -457,7 +457,7 @@ if node_section then
                 if e.ip_list then
                     local _ip = {}
                     string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
-                        if string.sub(w, 0, 1) != "#" then 
+                        if string.sub(w, 0, 1) ~= "#" then 
                             table.insert(_ip, w)
                         end
                     end)
@@ -577,54 +577,54 @@ if dns_server or dns_fakedns then
     -- 内置 DNS 服务规则
     -- https://www.v2ray.com/chapter_02/04_dns.html
     dns = {
-        tag = "dns-internal"
-        servers = [
+        tag = "dns-internal",
+        servers = {
             -- 非国内域名强制查询境外服务
             -- 且期待境外结果
             {
                 address = "tcp://1.1.1.1:53",
-                domains = [
+                domains = {
                     "geosite:geolocation-!cn"
-                ],
-                expectIPs = [
+                },
+                expectIPs = {
                     "geoip:!cn"
-                ]
+                }
             },
             -- 国内域名强制查询境内服务
             -- 且期待境内结果
             {
                 address = "223.5.5.5",
-                domains = [
+                domains = {
                     "geosite:geolocation-cn"
-                ],
-                expectIPs = [
+                },
+                expectIPs = {
                     "geoip:cn"
-                ]
+                }
             },
             -- 未定义域名查询境内服务
             -- 并期待境内结果
             {
                 address = "tcp://1.1.1.1:53",
-                expectIPs = [
+                expectIPs = {
                     "geoip:cn"
-                ]
+                }
             },
             -- 回退用境外查询
             -- 给什么用什么, 避免污染
             "tcp://1.1.1.1:53",
             "tcp://1.0.0.2:53",
             "tcp://8.8.8.8:53",
-            "tcp://8.8.4.4:53",
+            "tcp://8.8.4.4:53"
             
             -- 本地服务器配置的 DNS 做最终 failback
             -- 除非知道在干什么, 正常情况下不应使用, 会引发回环
             -- "localhost"
-        ],
+        },
         clientIp = (dns_client_ip and dns_client_ip ~= "") and dns_client_ip or nil,
-        queryStrategy = (dns_query_strategy and dns_query_strategy ~= "") and dns_query_strategy or nil
+        queryStrategy = (dns_query_strategy and dns_query_strategy ~= "") and dns_query_strategy or nil,
         disableCache = (dns_cache and dns_cache == "0") and true or false,
         disableFallback = false,
-        disableFallbackIfMatch = false,
+        disableFallbackIfMatch = false
     }
 
     --[[if dns_listen_port then
