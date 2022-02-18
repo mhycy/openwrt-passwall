@@ -658,8 +658,18 @@ if dns_server or dns_fakedns then
             network = "tcp,udp"
         }
     })
-
+    --[[
     -- 插入相关的路由项目
+    -- 内部 DNS 服务器路由策略
+    -- TODO: 增加 DNS 服务器路由策略支持
+    table.insert(rules, {
+        type = "field",
+        inboundTag = {
+            "dns-internal"
+        },
+        outboundTag = "XrayDNS"
+    })--]]
+
     -- 默认的 DNS 路由策略
     -- 此处无法改变, 关乎默认非 IP 查询的 DNS 请求该怎么出去
     table.insert(rules, {
@@ -671,16 +681,8 @@ if dns_server or dns_fakedns then
     })
 
     -- 内部 DNS 服务器路由策略
-    -- 交由 RayDNS 规则进行处理
-    -- 默认由 RayDNS outbound 规则处理
     -- TODO: 增加 DNS 服务器路由策略支持
-    table.insert(rules, {
-        type = "field",
-        inboundTag = {
-            "dns-internal"
-        },
-        outboundTag = "xRayDNS"
-    })
+    -- table.insert(rules, {})
 
     --[[ if dns_socks_address and dns_socks_port then
         table.insert(outbounds, 1, {
@@ -731,8 +733,10 @@ if dns_server or dns_fakedns then
             rules = rules
         }
     else
+        idx = 1
         for index, value in ipairs(rules) do
-            table.insert(routing.rules, 1, value)
+            table.insert(routing.rules, idx, value)
+            idx = idx + 1
         end
     end
     

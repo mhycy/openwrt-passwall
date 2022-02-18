@@ -652,6 +652,7 @@ run_redir() {
 			[ "${DNS_MODE}" = "v2ray" -o "${DNS_MODE}" = "xray" ] && {
 				local v2ray_dns_mode=$(config_t_get global v2ray_dns_mode tcp)
 				[ "$(config_t_get global dns_by)" = "tcp" -o "${v2ray_dns_mode}" = "fakedns" ] && {
+					# 这个地方给生成结果加个 DNS 后缀
 					config_file=$(echo $config_file | sed "s/.json/_DNS.json/g")
 					resolve_dns=1
 					local dns_query_strategy=$(config_t_get global dns_query_strategy UseIPv4)
@@ -1045,6 +1046,20 @@ stop_crontab() {
 }
 
 start_dns() {
+	# 独立处理 v2ray/xray 分流
+	# 后续的处理全都可以略过了
+	case "$DNS_SHUT" in
+	xray)
+		# 确保没有奇奇怪怪的 dnsmasq 规则干扰
+		source $APP_PATH/helper_smartdns.sh del
+		source $APP_PATH/helper_smartdns.sh stop no_log=1
+		source $APP_PATH/helper_dnsmasq.sh del
+		source $APP_PATH/helper_dnsmasq.sh stop no_log=1
+		echolog "  - 域名解析：使用xRay(V2ray/Xray)通用配置，请确保配置正常。"
+		return 1
+	;;
+	esac
+
 	TUN_DNS="127.0.0.1#${dns_listen_port}"
 
 	echolog "过滤服务配置：准备接管域名解析..."
@@ -1130,10 +1145,6 @@ start_dns() {
 		source $APP_PATH/helper_smartdns.sh add DNS_MODE=$DNS_MODE SMARTDNS_CONF=/tmp/etc/smartdns/$CONFIG.conf REMOTE_FAKEDNS=$fakedns DEFAULT_DNS=$DEFAULT_DNS LOCAL_GROUP=$group_domestic TUN_DNS=$TUN_DNS TCP_NODE=$TCP_NODE PROXY_MODE=${TCP_PROXY_MODE}${LOCALHOST_TCP_PROXY_MODE} NO_PROXY_IPV6=${filter_proxy_ipv6}
 		source $APP_PATH/helper_smartdns.sh restart
 		echolog "  - 域名解析：使用SmartDNS，请确保配置正常。"
-	;;
-
-	xray)
-		echolog "  - 域名解析：使用Xray，请确保配置正常。"
 	;;
 	esac
 

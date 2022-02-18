@@ -77,12 +77,12 @@ add() {
 	#始终用国内DNS解析节点域名
 	servers=$(uci show "${CONFIG}" | grep ".address=" | cut -d "'" -f 2)
 	hosts_foreach "servers" host_from_url | grep '[a-zA-Z]$' | sort -u | gen_items ipsets="#4:vpsiplist,#6:vpsiplist6" group="${LOCAL_GROUP}" outf="${SMARTDNS_CONF}"
-	echolog "  - [$?]节点列表中的域名(vpsiplist)使用分组：${LOCAL_GROUP:-默认}"
+	echolog "helper_smartdns.sh - [$?]节点列表中的域名(vpsiplist)使用分组：${LOCAL_GROUP:-默认}"
 
 	#始终用国内DNS解析直连（白名单）列表
 	[ -s "${RULES_PATH}/direct_host" ] && {
 		cat "${RULES_PATH}/direct_host" | tr -s '\n' | grep -v "^#" | sort -u | gen_items ipsets="#4:whitelist,#6:whitelist6" group="${LOCAL_GROUP}" outf="${SMARTDNS_CONF}"
-		echolog "  - [$?]域名白名单(whitelist)使用分组：${LOCAL_GROUP:-默认}"
+		echolog "helper_smartdns.sh - [$?]域名白名单(whitelist)使用分组：${LOCAL_GROUP:-默认}"
 	}
 	
 	subscribe_list=""
@@ -94,7 +94,7 @@ add() {
 		if [ "$(config_t_get global_subscribe subscribe_proxy 0)" = "0" ]; then
 			#如果没有开启通过代理订阅
 			echo -e "$subscribe_list" | sort -u | gen_items ipsets="#4:whitelist,#6:whitelist6" group="${LOCAL_GROUP}" outf="${SMARTDNS_CONF}"
-			echolog "  - [$?]节点订阅域名(whitelist)使用分组：${LOCAL_GROUP:-默认}"
+			echolog "helper_smartdns.sh - [$?]节点订阅域名(whitelist)使用分组：${LOCAL_GROUP:-默认}"
 		else
 			#如果开启了通过代理订阅
 			local ipset_flag="#4:blacklist,#6:blacklist6"
@@ -104,7 +104,7 @@ add() {
 			fi
 			[ -n "${REMOTE_FAKEDNS}" ] && unset ipset_flag
 			echo -e "$subscribe_list" | sort -u | gen_items ipsets="${ipset_flag}" group="${REMOTE_GROUP}" address="${address}" speed_check_mode="none" outf="${SMARTDNS_CONF}"
-			echolog "  - [$?]节点订阅域名(blacklist)使用分组：${REMOTE_GROUP}"
+			echolog "helper_smartdns.sh - [$?]节点订阅域名(blacklist)使用分组：${REMOTE_GROUP}"
 		fi
 	}
 	
@@ -117,7 +117,7 @@ add() {
 		fi
 		[ -n "${REMOTE_FAKEDNS}" ] && unset ipset_flag
 		cat "${RULES_PATH}/proxy_host" | tr -s '\n' | grep -v "^#" | sort -u | gen_items ipsets="${ipset_flag}" group="${REMOTE_GROUP}" address="${address}" speed_check_mode="none" outf="${SMARTDNS_CONF}"
-		echolog "  - [$?]代理域名表(blacklist)使用分组：${REMOTE_GROUP}"
+		echolog "helper_smartdns.sh - [$?]代理域名表(blacklist)使用分组：${REMOTE_GROUP}"
 	}
 
 	#分流规则
@@ -150,7 +150,7 @@ add() {
 				msg_dns="${REMOTE_GROUP}"
 			}
 		done
-		echolog "  - [$?]V2ray/Xray分流规则(shuntlist)：${msg_dns:-默认}"
+		echolog "helper_smartdns.sh - [$?]V2ray/Xray分流规则(shuntlist)：${msg_dns:-默认}"
 	}
 	
 	[ -s "${RULES_PATH}/direct_host" ] && direct_hosts_str="$(echo -n $(cat ${RULES_PATH}/direct_host | tr -s '\n' | grep -v "^#" | sort -u) | sed "s/ /|/g")"
@@ -171,14 +171,14 @@ add() {
 			fi
 			[ -n "${REMOTE_FAKEDNS}" ] && unset ipset_flag
 			sort -u "${TMP_PATH}/gfwlist" | gen_items ipsets="${ipset_flag}" group="${REMOTE_GROUP}" address="${address}" speed_check_mode="none" outf="${SMARTDNS_CONF}"
-			echolog "  - [$?]防火墙域名表(gfwlist)使用分组：${REMOTE_GROUP}"
+			echolog "helper_smartdns.sh - [$?]防火墙域名表(gfwlist)使用分组：${REMOTE_GROUP}"
 			rm -f "${TMP_PATH}/gfwlist"
 		}
 		
 		# 中国列表以外 模式
 		[ -s "${RULES_PATH}/chnlist" ] && [ -n "${chnlist}" ] && {
 			grep -v -E "$count_hosts_str" "${RULES_PATH}/chnlist" | gen_items ipsets="#4:chnroute,#6:chnroute6" group="${LOCAL_GROUP}" outf="${SMARTDNS_CONF}"
-			echolog "  - [$?]中国域名表(chnroute)使用分组：${LOCAL_GROUP:-默认}"
+			echolog "helper_smartdns.sh - [$?]中国域名表(chnroute)使用分组：${LOCAL_GROUP:-默认}"
 		}
 	else
 		#回国模式
@@ -192,13 +192,13 @@ add() {
 			fi
 			[ -n "${REMOTE_FAKEDNS}" ] && unset ipset_flag
 			sort -u "${TMP_PATH}/chnlist" | gen_items ipsets="${ipset_flag}" group="${REMOTE_GROUP}" address="${address}" speed_check_mode="none" outf="${SMARTDNS_CONF}"
-			echolog "  - [$?]中国域名表(chnroute)使用分组：${REMOTE_GROUP}"
+			echolog "helper_smartdns.sh - [$?]中国域名表(chnroute)使用分组：${REMOTE_GROUP}"
 			rm -f "${TMP_PATH}/chnlist"
 		}
 	fi
 	
 	echo "conf-file ${SMARTDNS_CONF}" >> /etc/smartdns/custom.conf
-	echolog "  - 请让SmartDNS作为Dnsmasq的上游或重定向！"
+	echolog "helper_smartdns.sh - 请让SmartDNS作为Dnsmasq的上游或重定向！"
 	LOG_FILE=${_LOG_FILE}
 }
 
