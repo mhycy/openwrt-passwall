@@ -180,6 +180,7 @@ if api.is_finded("smartdns") then
     dns_shunt = s:taboption("DNS", ListValue, "dns_shunt", translate("DNS Shunt"))
     dns_shunt:value("dnsmasq", "Dnsmasq")
     dns_shunt:value("smartdns", "SmartDNS")
+    dns_shunt:value("xray", "xRay")
 
     group_domestic = s:taboption("DNS", Value, "group_domestic", translate("Domestic group name"))
     group_domestic.placeholder = "local"

@@ -443,7 +443,9 @@ if node_section then
                 if e.domain_list then
                     local _domain = {}
                     string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
-                        table.insert(_domain, w)
+                        if string.sub(w, 0, 1) != "#" then 
+                            table.insert(_domain, w)
+                        end
                     end)
                     table.insert(rules, {
                         type = "field",
@@ -455,7 +457,9 @@ if node_section then
                 if e.ip_list then
                     local _ip = {}
                     string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
-                        table.insert(_ip, w)
+                        if string.sub(w, 0, 1) != "#" then 
+                            table.insert(_ip, w)
+                        end
                     end)
                     table.insert(rules, {
                         type = "field",
@@ -517,20 +521,22 @@ if node_section then
 end
 
 if dns_server or dns_fakedns then
+    -- DNS Outbound 配置
+    -- https://www.v2ray.com/chapter_02/protocols/dns.html
+    -- 说明: 拦截本地出口的所有 IP 查询, 并转发到内部 DNS 服务器;
+    --       同时, 非 IP 查询的 DNS 请求，直接发走
     table.insert(outbounds, {
-        protocol = "dns",
-        tag = "dns-out"
+        tag = "dns-out",
+        protocol = "dns"
     })
+
     local rules = {}
 
-    dns = {
+    --[[ dns = {
         tag = "dns-in1",
         disableCache = (dns_cache and dns_cache == "0") and true or false,
         servers = {
             dns_server
-        },
-        proxySettings = {
-            outboundTag = "XrayDNS"
         },
         clientIp = (dns_client_ip and dns_client_ip ~= "") and dns_client_ip or nil,
         queryStrategy = (dns_query_strategy and dns_query_strategy ~= "") and dns_query_strategy or nil
@@ -566,9 +572,62 @@ if dns_server or dns_fakedns then
         dns.servers = {
             "fakedns"
         }
-    end
+    end --]]
 
-    if dns_listen_port then
+    -- 内置 DNS 服务规则
+    -- https://www.v2ray.com/chapter_02/04_dns.html
+    dns = {
+        tag = "dns-internal"
+        servers = [
+            -- 非国内域名强制查询境外服务
+            -- 且期待境外结果
+            {
+                address = "tcp://1.1.1.1:53",
+                domains = [
+                    "geosite:geolocation-!cn"
+                ],
+                expectIPs = [
+                    "geoip:!cn"
+                ]
+            },
+            -- 国内域名强制查询境内服务
+            -- 且期待境内结果
+            {
+                address = "223.5.5.5",
+                domains = [
+                    "geosite:geolocation-cn"
+                ],
+                expectIPs = [
+                    "geoip:cn"
+                ]
+            },
+            -- 未定义域名查询境内服务
+            -- 并期待境内结果
+            {
+                address = "tcp://1.1.1.1:53",
+                expectIPs = [
+                    "geoip:cn"
+                ]
+            },
+            -- 回退用境外查询
+            -- 给什么用什么, 避免污染
+            "tcp://1.1.1.1:53",
+            "tcp://1.0.0.2:53",
+            "tcp://8.8.8.8:53",
+            "tcp://8.8.4.4:53",
+            
+            -- 本地服务器配置的 DNS 做最终 failback
+            -- 除非知道在干什么, 正常情况下不应使用, 会引发回环
+            -- "localhost"
+        ],
+        clientIp = (dns_client_ip and dns_client_ip ~= "") and dns_client_ip or nil,
+        queryStrategy = (dns_query_strategy and dns_query_strategy ~= "") and dns_query_strategy or nil
+        disableCache = (dns_cache and dns_cache == "0") and true or false,
+        disableFallback = false,
+        disableFallbackIfMatch = false,
+    }
+
+    --[[if dns_listen_port then
         table.insert(inbounds, {
             listen = "127.0.0.1",
             port = tonumber(dns_listen_port),
@@ -580,8 +639,29 @@ if dns_server or dns_fakedns then
                 network = "tcp,udp"
             }
         })
-    end
+    end--]]
 
+    -- 监听本地 DNS 端口
+    -- 需要一个外网地址进行转发
+    -- DNS 请求会被路由规则所劫持, 由内部 DNS 提供服务
+    table.insert(inbounds, {
+        tag = "dns-in",
+        protocol = "dokodemo-door",
+        listen = "127.0.0.1",
+        port = tonumber(dns_listen_port),
+        
+        -- 理论上, 此处的 8.8.8.8 UDP 请求，会直接从 outbounds -> dns-out 出去
+        -- TODO: 后续使用 overture 替换掉这里的远程解析配置
+        settings = {
+            address = " 8.8.8.8",
+            port = 53,
+            network = "tcp,udp"
+        }
+    })
+
+    -- 插入相关的路由项目
+    -- 默认的 DNS 路由策略
+    -- 此处无法改变, 关乎默认非 IP 查询的 DNS 请求该怎么出去
     table.insert(rules, {
         type = "field",
         inboundTag = {
@@ -590,7 +670,19 @@ if dns_server or dns_fakedns then
         outboundTag = "dns-out"
     })
 
-    if dns_socks_address and dns_socks_port then
+    -- 内部 DNS 服务器路由策略
+    -- 交由 RayDNS 规则进行处理
+    -- 默认由 RayDNS outbound 规则处理
+    -- TODO: 增加 DNS 服务器路由策略支持
+    table.insert(rules, {
+        type = "field",
+        inboundTag = {
+            "dns-internal"
+        },
+        outboundTag = "xRayDNS"
+    })
+
+    --[[ if dns_socks_address and dns_socks_port then
         table.insert(outbounds, 1, {
             tag = "out",
             protocol = "socks",
@@ -631,7 +723,8 @@ if dns_server or dns_fakedns then
             outboundTag = outboundTag
         })
     end
-    
+    --]]
+
     if not routing then
         routing = {
             domainStrategy = "IPOnDemand",
@@ -642,6 +735,7 @@ if dns_server or dns_fakedns then
             table.insert(routing.rules, 1, value)
         end
     end
+    
 end
 
 if inbounds or outbounds then
