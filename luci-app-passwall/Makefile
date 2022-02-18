@@ -31,7 +31,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_Plugin \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray_Plugin \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_IPv6_Nat \ 
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_IPv6_Nat \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_Ext_GeoData
 
 LUCI_TITLE:=LuCI support for PassWall
@@ -147,7 +147,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Xray_Plugin
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_Ext_GeoData
 	bool "Include V2ray extend geodata"
-	default y
+	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_IPv6_Nat
 	depends on PACKAGE_ip6tables
