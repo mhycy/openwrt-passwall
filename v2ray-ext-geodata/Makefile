@@ -60,6 +60,8 @@ define Package/v2ray-ext-geodata/install
 	$(INSTALL_DIR) $(1)/usr/share/v2ray
 	$(INSTALL_DATA) $(DL_DIR)/$(GEOIP_FILE) $(1)/usr/share/v2ray/geoip.dat
 	$(INSTALL_DATA) $(DL_DIR)/$(GEOSITE_FILE) $(1)/usr/share/v2ray/geosite.dat
+  $(LN) geoip.dat $(1)/usr/share/xray/geoip.dat
+	$(LN) geosite.dat $(1)/usr/share/xray/geosite.dat
 endef
 
 $(eval $(call BuildPackage,v2ray-ext-geodata))
