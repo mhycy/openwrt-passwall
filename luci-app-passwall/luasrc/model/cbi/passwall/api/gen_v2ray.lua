@@ -463,6 +463,7 @@ if node_section then
                     type = "field",
                     outboundTag = outboundTag,
                     domain = _domain,
+                    ip = _ip,
                     protocol = protocols
                 })
             end
