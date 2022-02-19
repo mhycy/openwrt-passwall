@@ -609,7 +609,9 @@ if dns_server or dns_fakedns then
             
             -- 本地服务器配置的 DNS 做最终 failback
             -- 除非知道在干什么, 正常情况下不应使用, 会引发回环
-            -- "localhost"
+            "223.5.5.5",
+            "223.6.6.6",
+            "119.29.29.29"
         },
         clientIp = (dns_client_ip and dns_client_ip ~= "") and dns_client_ip or nil,
         queryStrategy = (dns_query_strategy and dns_query_strategy ~= "") and dns_query_strategy or nil,
