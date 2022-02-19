@@ -605,7 +605,7 @@ if dns_server or dns_fakedns then
             "tcp://1.1.1.1:53",
             "tcp://1.0.0.2:53",
             "tcp://8.8.8.8:53",
-            "tcp://8.8.4.4:53"
+            "tcp://8.8.4.4:53",
             
             -- 本地 DNS 做最终 fallback
             "223.5.5.5",
