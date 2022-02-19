@@ -3,7 +3,6 @@
 add() {
 	cat>>/tmp/dnsmasq.d/force-xray.conf<<EOF
 no-resolv
-cache-size=0
 server=127.0.0.1#7913
 EOF
 }
