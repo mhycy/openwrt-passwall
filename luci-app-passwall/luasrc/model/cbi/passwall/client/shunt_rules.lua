@@ -39,8 +39,10 @@ domain_list.validate = function(self, value)
             flag = 0
         end
         if flag == 1 then
-            if not datatypes.hostname(tmp_host) then
-                return nil, tmp_host .. " " .. translate("Not valid domain name, please re-enter!")
+            if not tmp_host:find("#") or tmp_host:find("#") ~= 1 then
+                if not datatypes.hostname(tmp_host) then
+                    return nil, tmp_host .. " " .. translate("Not valid domain name, please re-enter!")
+                end
             end
         end
     end
