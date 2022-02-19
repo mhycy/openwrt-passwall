@@ -195,6 +195,7 @@ domainStrategy:depends("protocol", "_shunt")
 domainMatcher = s:option(ListValue, "domainMatcher", translate("Domain matcher"))
 domainMatcher:value("hybrid")
 domainMatcher:value("linear")
+domainMatcher:value("mph")
 domainMatcher:depends("protocol", "_balancing")
 domainMatcher:depends("protocol", "_shunt")
 
