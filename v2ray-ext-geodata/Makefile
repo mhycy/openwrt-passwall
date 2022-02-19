@@ -46,11 +46,11 @@ define Package/v2ray-ext-geodata
 endef
 
 define Build/Prepare
-	$(call Build/Prepare/Default)
-	ifneq ($(CONFIG_PACKAGE_v2ray-ext-geodata),)
-		$(call Download,geoip)
-		$(call Download,geosite)
-	endif
+$(call Build/Prepare/Default)
+ifneq ($(CONFIG_PACKAGE_v2ray-ext-geodata),)
+$(call Download,geoip)
+$(call Download,geosite)
+endif
 endef
 
 define Build/Compile
