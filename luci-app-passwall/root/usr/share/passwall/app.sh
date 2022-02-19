@@ -1048,13 +1048,17 @@ stop_crontab() {
 start_dns() {
 	# 独立处理 v2ray/xray 分流
 	# 后续的处理全都可以略过了
-	case "$DNS_SHUT" in
+	case "$DNS_SHUNT" in
 	xray)
 		# 确保没有奇奇怪怪的 dnsmasq 规则干扰
 		source $APP_PATH/helper_smartdns.sh del
 		source $APP_PATH/helper_smartdns.sh stop no_log=1
 		source $APP_PATH/helper_dnsmasq.sh del
 		source $APP_PATH/helper_dnsmasq.sh stop no_log=1
+
+		# 插入 xray DNS配置
+		source $APP_PATH/helper_xray.sh add
+
 		echolog "  - 域名解析：使用xRay(V2ray/Xray)通用配置，请确保配置正常。"
 		return 1
 	;;
@@ -1436,6 +1440,7 @@ stop() {
 	source $APP_PATH/helper_smartdns.sh restart no_log=1
 	source $APP_PATH/helper_dnsmasq.sh del
 	source $APP_PATH/helper_dnsmasq.sh restart no_log=1
+	source $APP_PATH/helper_xray.sh del
 	rm -rf ${TMP_PATH}
 	rm -rf /tmp/lock/${CONFIG}_script.lock
 	echolog "清空并关闭相关程序和缓存完成。"

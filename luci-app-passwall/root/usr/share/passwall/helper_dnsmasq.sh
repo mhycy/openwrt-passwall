@@ -181,7 +181,6 @@ add() {
 	}
 
 	#分流规则
-<<COMMENT
 	[ "$(config_n_get $TCP_NODE protocol)" = "_shunt" ] && {
 		fwd_dns="${TUN_DNS}"
 		msg_dns="${fwd_dns}"
@@ -215,7 +214,6 @@ add() {
 		done
 		echolog "helper_dnsmasq.sh - [$?]V2ray/Xray分流规则(shuntlist)：${msg_dns:-默认}"
 	}
-COMMENT
 
 	[ -s "${RULES_PATH}/direct_host" ] && direct_hosts_str="$(echo -n $(cat ${RULES_PATH}/direct_host | tr -s '\n' | grep -v "^#" | sort -u) | sed "s/ /|/g")"
 	[ -s "${RULES_PATH}/proxy_host" ] && proxy_hosts_str="$(echo -n $(cat ${RULES_PATH}/proxy_host | tr -s '\n' | grep -v "^#" | sort -u) | sed "s/ /|/g")"
