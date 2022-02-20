@@ -23,7 +23,11 @@ domain_list.rows = 10
 domain_list.wrap = "off"
 domain_list.validate = function(self, value)
     local hosts= {}
-    string.gsub(value, '[^' .. "\r\n" .. ']+', function(w) table.insert(hosts, w) end)
+    string.gsub(value, '[^' .. "\r\n" .. ']+', function(w)
+        if string.sub(w, 0, 1) ~= "#" then 
+            table.insert(hosts, w)
+        end
+    end)
     for index, host in ipairs(hosts) do
         local flag = 1
         local tmp_host = host
@@ -39,10 +43,8 @@ domain_list.validate = function(self, value)
             flag = 0
         end
         if flag == 1 then
-            if not tmp_host:find("#") or tmp_host:find("#") ~= 1 then
-                if not datatypes.hostname(tmp_host) then
-                    return nil, tmp_host .. " " .. translate("Not valid domain name, please re-enter!")
-                end
+            if not datatypes.hostname(tmp_host) then
+                return nil, tmp_host .. " " .. translate("Not valid domain name, please re-enter!")
             end
         end
     end
@@ -60,15 +62,17 @@ ip_list.rows = 10
 ip_list.wrap = "off"
 ip_list.validate = function(self, value)
     local ipmasks= {}
-    string.gsub(value, '[^' .. "\r\n" .. ']+', function(w) table.insert(ipmasks, w) end)
+    string.gsub(value, '[^' .. "\r\n" .. ']+', function(w)
+        if string.sub(w, 0, 1) ~= "#" then 
+            table.insert(ipmasks, w)
+        end
+    end)
     for index, ipmask in ipairs(ipmasks) do
         if ipmask:find("geoip:") and ipmask:find("geoip:") == 1 then
         elseif ipmask:find("ext:") and ipmask:find("ext:") == 1 then
         else
-            if not ipmask:find("#") or ipmask:find("#") ~= 1 then
-                if not (datatypes.ipmask4(ipmask) or datatypes.ipmask6(ipmask)) then
-                    return nil, ipmask .. " " .. translate("Not valid IP format, please re-enter!")
-                end
+            if not (datatypes.ipmask4(ipmask) or datatypes.ipmask6(ipmask)) then
+                return nil, ipmask .. " " .. translate("Not valid IP format, please re-enter!")
             end
         end
     end
