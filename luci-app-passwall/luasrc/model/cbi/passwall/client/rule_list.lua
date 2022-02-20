@@ -29,11 +29,10 @@ o.validate = function(self, value)
     local hosts= {}
     string.gsub(value, '[^' .. "\r\n" .. ']+', function(w) table.insert(hosts, w) end)
     for index, host in ipairs(hosts) do
-        if host:find("#") and host:find("#") == 1 then
-            return value
-        end
-        if not datatypes.hostname(host) then
-            return nil, host .. " " .. translate("Not valid domain name, please re-enter!")
+        if not host:find("#") or host:find("#") ~= 1 then
+            if not datatypes.hostname(host) then
+                return nil, host .. " " .. translate("Not valid domain name, please re-enter!")
+            end
         end
     end
     return value
@@ -54,6 +53,7 @@ o.validate = function(self, value)
         if not ipmask:find("#") or ipmask:find("#") ~= 1 then
             if not ( datatypes.ipmask4(ipmask) or datatypes.ipmask6(ipmask) ) then
                 return nil, ipmask .. " " .. translate("Not valid IP format, please re-enter!")
+            end
         end
     end
     return value
@@ -71,11 +71,10 @@ o.validate = function(self, value)
     local hosts= {}
     string.gsub(value, '[^' .. "\r\n" .. ']+', function(w) table.insert(hosts, w) end)
     for index, host in ipairs(hosts) do
-        if host:find("#") and host:find("#") == 1  then
-            return value
-        end
-        if not datatypes.hostname(host) then
-            return nil, host .. " " .. translate("Not valid domain name, please re-enter!")
+        if not host:find("#") or host:find("#") ~= 1  then
+            if not datatypes.hostname(host) then
+                return nil, host .. " " .. translate("Not valid domain name, please re-enter!")
+            end
         end
     end
     return value
@@ -96,6 +95,7 @@ o.validate = function(self, value)
         if not ipmask:find("#") or ipmask:find("#") ~= 1 then
             if not ( datatypes.ipmask4(ipmask) or datatypes.ipmask6(ipmask) ) then
                 return nil, ipmask .. " " .. translate("Not valid IP format, please re-enter!")
+            end
         end
     end
     return value
@@ -113,11 +113,10 @@ o.validate = function(self, value)
     local hosts= {}
     string.gsub(value, '[^' .. "\r\n" .. ']+', function(w) table.insert(hosts, w) end)
     for index, host in ipairs(hosts) do
-        if host:find("#") and host:find("#") == 1 then
-            return value
-        end
-        if not datatypes.hostname(host) then
-            return nil, host .. " " .. translate("Not valid domain name, please re-enter!")
+        if not host:find("#") or host:find("#") ~= 1 then
+            if not datatypes.hostname(host) then
+                return nil, host .. " " .. translate("Not valid domain name, please re-enter!")
+            end
         end
     end
     return value
@@ -138,6 +137,7 @@ o.validate = function(self, value)
         if not ipmask:find("#") or ipmask:find("#") ~= 1 then
             if not ( datatypes.ipmask4(ipmask) or datatypes.ipmask6(ipmask) ) then
                 return nil, ipmask .. " " .. translate("Not valid IP format, please re-enter!")
+            end
         end
     end
     return value
@@ -158,6 +158,7 @@ o.validate = function(self, value)
         if not ipmask:find("#") or ipmask:find("#") ~= 1 then
             if not datatypes.ipmask4(ipmask) then
                 return nil, ipmask .. " " .. translate("Not valid IPv4 format, please re-enter!")
+            end
         end
     end
     return value
@@ -178,6 +179,7 @@ o.validate = function(self, value)
         if not ipmask:find("#") or ipmask:find("#") ~= 1 then
             if not datatypes.ipmask6(ipmask) then
                 return nil, ipmask .. " " .. translate("Not valid IPv6 format, please re-enter!")
+            end
         end
     end
     return value
