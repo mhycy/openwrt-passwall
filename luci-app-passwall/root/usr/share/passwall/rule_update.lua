@@ -228,6 +228,7 @@ end
 local function fetch_geoip()
 	--请求geoip
 	xpcall(function()
+		log("从 API ".. geoip_api .. " 请求 geoip 更新")
 		local json_str = curl(geoip_api)
 		local json = jsonc.parse(json_str)
 		if json.tag_name and json.assets then
@@ -279,6 +280,7 @@ end
 local function fetch_geosite()
 	--请求geosite
 	xpcall(function()
+		log("从 API ".. geosite_api .. " 请求 geosite 更新")
 		local json_str = curl(geosite_api)
 		local json = jsonc.parse(json_str)
 		if json.tag_name and json.assets then
