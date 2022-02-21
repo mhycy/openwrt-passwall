@@ -434,40 +434,41 @@ if node_section then
                     outboundTag = default_outboundTag
                 end
                 local protocols = nil
+                local _protocols_empty = true
                 if e["protocol"] and e["protocol"] ~= "" then
                     protocols = {}
                     string.gsub(e["protocol"], '[^' .. " " .. ']+', function(w)
                         table.insert(protocols, w)
+                        _protocols_empty = false
                     end)
                 end
 
                 -- 获取规则信息
                 local _domain = {}
-                local _domain_empty = false
+                local _domain_empty = true
                 if e.domain_list then
                     string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
                         if string.sub(w, 0, 1) ~= "#" then 
                             table.insert(_domain, w)
+                            _domain_empty = false
                         end
                     end)
-
-                    if next(_domain) == nil then _domain_empty = true end
                 end
 
                 local _ip = {}
-                local _ip_empty = false
+                local _ip_empty = true
                 if e.ip_list then
                     string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
                         if string.sub(w, 0, 1) ~= "#" then 
                             table.insert(_ip, w)
+                            _ip_empty = false
                         end
                     end)
-                    if next(_ip) == nil then _ip_empty = true end
                 end
 
                 -- 插入信息
                 -- 只有协议
-                if _domain_empty and _ip_empty and next(protocols) ~= nil then
+                if _domain_empty and _ip_empty and not _protocols_empty then
                     table.insert(rules, {
                         type = "field",
                         outboundTag = outboundTag,
