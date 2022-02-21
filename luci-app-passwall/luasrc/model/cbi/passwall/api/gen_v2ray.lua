@@ -448,13 +448,19 @@ if node_section then
                             table.insert(_domain, w)
                         end
                     end)
-                    table.insert(rules, {
-                        type = "field",
-                        outboundTag = outboundTag,
-                        domain = _domain,
-                        protocol = protocols
-                    })
+
+                    if next(_domain) ~= nil then
+                        table.insert(rules, {
+                            type = "field",
+                            outboundTag = outboundTag,
+                            domain = _domain,
+                            protocol = protocols
+                        })
+                    else
+                        e.domain_list = ""
+                    end
                 end
+
                 if e.ip_list then
                     local _ip = {}
                     string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
@@ -462,13 +468,19 @@ if node_section then
                             table.insert(_ip, w)
                         end
                     end)
-                    table.insert(rules, {
-                        type = "field",
-                        outboundTag = outboundTag,
-                        ip = _ip,
-                        protocol = protocols
-                    })
+
+                    if next(_ip) ~= nil then
+                        table.insert(rules, {
+                            type = "field",
+                            outboundTag = outboundTag,
+                            ip = _ip,
+                            protocol = protocols
+                        })
+                    else
+                        e.ip_list = ""
+                    end
                 end
+
                 if not e.domain_list and not e.ip_list and protocols then
                     table.insert(rules, {
                         type = "field",
