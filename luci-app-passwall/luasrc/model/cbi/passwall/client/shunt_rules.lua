@@ -18,7 +18,7 @@ protocol:value("http")
 protocol:value("tls")
 protocol:value("bittorrent")
 
-rule_logic_mode = s:option(MultiValue, "rule_logic_mode", translate("Rules Mode"))
+rule_logic_mode = s:option(ListValue, "rule_logic_mode", translate("Rules Mode"))
 rule_logic_mode:value("and", translate("Logic AND"))
 rule_logic_mode:value("or", translate("Logic OR"))
 
