@@ -467,7 +467,7 @@ if node_section then
 
                 -- 插入信息
                 -- 只有协议
-                if _domain_empty and _ip_empty and protocols then
+                if _domain_empty and _ip_empty and next(protocols) ~= nil then
                     table.insert(rules, {
                         type = "field",
                         outboundTag = outboundTag,
@@ -475,10 +475,11 @@ if node_section then
                     })
                 else
                     -- IP 或者 域名 至少有一条存在数据
-                    if e.rules_logic_mode == "and" then
+                    if e.rule_logic_mode == "and" then
                         local current_rule = {
                             type = "field",
-                            protocol = protocols
+                            protocol = protocols,
+                            outboundTag = outboundTag,
                         }
 
                         if not _domain_empty then
@@ -489,13 +490,13 @@ if node_section then
                             current_rule["ip"] = _ip
                         end
 
-                        
                         table.insert(rules, current_rule)
                     else
                         if not _domain_empty then
                             table.insert(rules, {
                                 type = "field",
                                 protocol = protocols,
+                                outboundTag = outboundTag,
                                 domain = _domain
                             })
                         end
@@ -504,6 +505,7 @@ if node_section then
                             table.insert(rules, {
                                 type = "field",
                                 protocol = protocols,
+                                outboundTag = outboundTag,
                                 ip = _ip
                             })
                         end
