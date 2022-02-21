@@ -18,6 +18,10 @@ protocol:value("http")
 protocol:value("tls")
 protocol:value("bittorrent")
 
+rules_mode = s:option(MultiValue, "rules_mode", translate("Rules Mode"))
+rules_mode:value("and", "逻辑 AND")
+rules_mode:value("or", "逻辑 OR")
+
 domain_list = s:option(TextValue, "domain_list", translate("Domain"))
 domain_list.rows = 10
 domain_list.wrap = "off"

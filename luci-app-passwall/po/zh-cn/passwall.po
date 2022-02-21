@@ -1386,3 +1386,6 @@ msgstr "无子连接时的健康检查"
 
 msgid "Initial Windows Size"
 msgstr "初始窗口大小"
+
+msgid "Rules Mode"
+msgstr "规则逻辑"
