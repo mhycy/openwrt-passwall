@@ -18,9 +18,9 @@ protocol:value("http")
 protocol:value("tls")
 protocol:value("bittorrent")
 
-rules_mode = s:option(MultiValue, "rules_mode", translate("Rules Mode"))
-rules_mode:value("and", "逻辑 AND")
-rules_mode:value("or", "逻辑 OR")
+rules_logic_mode = s:option(MultiValue, "rules_logic_mode", translate("Rules Mode"))
+rules_logic_mode:value("and", translate("Logic AND"))
+rules_logic_mode:value("or", translate("Logic OR"))
 
 domain_list = s:option(TextValue, "domain_list", translate("Domain"))
 domain_list.rows = 10
@@ -28,6 +28,7 @@ domain_list.wrap = "off"
 domain_list.validate = function(self, value)
     local hosts= {}
     string.gsub(value, '[^' .. "\r\n" .. ']+', function(w)
+        -- 过滤注释
         if string.sub(w, 0, 1) ~= "#" then 
             table.insert(hosts, w)
         end
@@ -67,6 +68,7 @@ ip_list.wrap = "off"
 ip_list.validate = function(self, value)
     local ipmasks= {}
     string.gsub(value, '[^' .. "\r\n" .. ']+', function(w)
+        -- 过滤注释
         if string.sub(w, 0, 1) ~= "#" then 
             table.insert(ipmasks, w)
         end

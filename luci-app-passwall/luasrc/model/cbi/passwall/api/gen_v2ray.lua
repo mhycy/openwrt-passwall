@@ -440,53 +440,71 @@ if node_section then
                         table.insert(protocols, w)
                     end)
                 end
-                
+
+                -- 获取规则信息
+                local _domain = {}
+                local _domain_empty = false
                 if e.domain_list then
-                    local _domain = {}
                     string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
                         if string.sub(w, 0, 1) ~= "#" then 
                             table.insert(_domain, w)
                         end
                     end)
 
-                    if next(_domain) ~= nil then
-                        table.insert(rules, {
-                            type = "field",
-                            outboundTag = outboundTag,
-                            domain = _domain,
-                            protocol = protocols
-                        })
-                    else
-                        e.domain_list = ""
-                    end
+                    if next(_domain) == nil then _domain_empty = true end
                 end
 
+                local _ip = {}
+                local _ip_empty = false
                 if e.ip_list then
-                    local _ip = {}
                     string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
                         if string.sub(w, 0, 1) ~= "#" then 
                             table.insert(_ip, w)
                         end
                     end)
-
-                    if next(_ip) ~= nil then
-                        table.insert(rules, {
-                            type = "field",
-                            outboundTag = outboundTag,
-                            ip = _ip,
-                            protocol = protocols
-                        })
-                    else
-                        e.ip_list = ""
-                    end
+                    if next(_ip) == nil then _ip_empty = true end
                 end
 
-                if not e.domain_list and not e.ip_list and protocols then
+                -- 插入信息
+                if not _domain_empty and not _ip_empty and protocols then
                     table.insert(rules, {
                         type = "field",
                         outboundTag = outboundTag,
                         protocol = protocols
                     })
+                else
+                    if e.rules_logic_mode == "and" then
+                        local current_rule = {
+                            type = "field",
+                            protocol = protocols
+                        }
+
+                        if not _domain_empty then
+                            current_rule["domain"] = _domain
+                        end
+
+                        if not _ip_empty then
+                            current_rule["ip"] = _domain
+                        end
+
+                        table.insert(rules, current_rule)
+                    else
+                        if not _domain_empty then
+                            table.insert(rules, {
+                                type = "field",
+                                protocol = protocols,
+                                domain = _domain
+                            })
+                        end
+
+                        if not _ip_empty then
+                            table.insert(rules, {
+                                type = "field",
+                                protocol = protocols,
+                                ip = _ip
+                            })
+                        end
+                    end
                 end
             end
         end)
