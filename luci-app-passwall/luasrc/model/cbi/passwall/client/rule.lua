@@ -40,6 +40,16 @@ o:value("https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/accelerated-
 o:value("https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/apple.china.conf", translate("felixonmars/apple.china"))
 o:value("https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/google.china.conf", translate("felixonmars/google.china"))
 
+----geosite API URL
+o = s:option(Value, "geosite_api", translate("geosite.dat API"))
+o.default = "https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest"
+o.rmempty = false
+
+----geoip API URL
+o = s:option(Value, "geoip_api", translate("geoip.dat API"))
+o.default = "https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest"
+o.rmempty = false
+
 s:append(Template(appname .. "/rule/rule_version"))
 
 ---- Auto Update
