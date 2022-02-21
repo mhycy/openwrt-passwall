@@ -484,7 +484,7 @@ if node_section then
                         end
 
                         if not _ip_empty then
-                            current_rule["ip"] = _domain
+                            current_rule["ip"] = _ip
                         end
 
                         table.insert(rules, current_rule)
