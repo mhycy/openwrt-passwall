@@ -19,8 +19,8 @@ protocol:value("tls")
 protocol:value("bittorrent")
 
 rule_logic_mode = s:option(ListValue, "rule_logic_mode", translate("Rules Mode"))
-rule_logic_mode:value("and", translate("Logic AND"))
 rule_logic_mode:value("or", translate("Logic OR"))
+rule_logic_mode:value("and", translate("Logic AND"))
 
 domain_list = s:option(TextValue, "domain_list", translate("Domain"))
 domain_list.rows = 10
